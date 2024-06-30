@@ -1,11 +1,8 @@
-# Morphic
+# Heku
 
 An AI-powered search engine with a generative UI.
 
 ![capture](/public/capture-240404_blk.png)
-
-> [!NOTE]
-> Please note that there are differences between this repository and the official website [morphic.sh](https://morphic.sh). The official website is a fork of this repository with additional features such as authentication, which are necessary for providing the service online. The core source code of Morphic resides in this repository, and it's designed to be easily built and deployed.
 
 ## 🗂️ Overview
 
@@ -46,26 +43,18 @@ An AI-powered search engine with a generative UI.
 
 ## 🚀 Quickstart
 
-### 1. Fork and Clone repo
-
-Fork the repo to your Github account, then run the following command to clone the repo:
+### 1. Install dependencies
 
 ```
-git clone git@github.com:[YOUR_GITHUB_ACCOUNT]/morphic.git
-```
-
-### 2. Install dependencies
-
-```
-cd morphic
+cd heku-search
 bun install
 ```
 
-### 3. Setting up Upstash Redis
+### 2. Setting up Upstash Redis
 
 Follow the guide below to set up Upstash Redis. Create a database and obtain `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`. Refer to the [Upstash guide](https://upstash.com/blog/rag-chatbot-upstash#setting-up-upstash-redis) for instructions on how to proceed.
 
-### 4. Fill out secrets
+### 3. Fill out secrets
 
 ```
 cp .env.local.example .env.local
@@ -87,7 +76,7 @@ UPSTASH_REDIS_REST_TOKEN=
 
 _Note: This project focuses on Generative UI and requires complex output from LLMs. Currently, it's assumed that the official OpenAI models will be used. Although it's possible to set up other models, if you use an OpenAI-compatible model, but we don't guarantee that it'll work._
 
-### 5. Run app locally
+### 4. Run app locally
 
 ```
 bun dev
