@@ -7,14 +7,12 @@ import { useUIState, useActions, useAIState } from 'ai/rsc'
 import { cn } from '@/lib/utils'
 import { UserMessage } from './user-message'
 import { Button } from './ui/button'
-import { ArrowRight, Plus } from 'lucide-react'
+import { ArrowRight, Plus, ChevronDown } from 'lucide-react'
 import { EmptyScreen } from './empty-screen'
 import Textarea from 'react-textarea-autosize'
 import { generateId } from 'ai'
 import { useAppState } from '@/lib/utils/app-state'
-import { Label } from './ui/label' // Импортируем компонент Label
 import { Popover, PopoverContent, PopoverTrigger } from './popover'
-import { ChevronDown } from 'lucide-react'
 
 const exampleMessages = [
   {
@@ -31,7 +29,7 @@ const exampleMessages = [
   },
   {
     heading: 'Анализ текста',
-    message: 'Проанализируй основные темы  книге "1984" Джорджа Оруэлла'
+    message: 'Проанализируй основные темы в книге "1984" Джорджа Оруэлла'
   }
 ]
 
@@ -71,7 +69,6 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
     setInput(query)
     setIsGenerating(true)
 
-    // Add user message to UI state
     setMessages(currentMessages => [
       ...currentMessages,
       {
@@ -80,12 +77,10 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
       }
     ])
 
-    // Submit and get response message
     const data = formData || new FormData()
     if (!formData) {
       data.append('input', query)
     }
-    // Убедитесь, что категория добавлена в data
     if (!data.has('category')) {
       data.append('category', selectedCategory)
     }
@@ -106,13 +101,11 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
     setMessages(currentMessages => [...currentMessages, responseMessage])
   }
 
-  // if query is not empty, submit the query
   useEffect(() => {
     if (isFirstRender.current && query && query.trim().length > 0) {
       handleQuerySubmit(query)
       isFirstRender.current = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query])
 
   useEffect(() => {
@@ -122,7 +115,6 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
     }
   }, [aiMessage, setIsGenerating])
 
-  // Clear messages
   const handleClear = () => {
     setIsGenerating(false)
     setMessages([])
@@ -132,11 +124,9 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
   }
 
   useEffect(() => {
-    // focus on input when the page loads
     inputRef.current?.focus()
   }, [])
 
-  // If there are messages and the new button has not been pressed, display the new Button
   if (messages.length > 0) {
     return (
       <div className="fixed bottom-2 md:bottom-8 left-0 right-0 flex justify-center items-center mx-auto pointer-events-none">
@@ -186,37 +176,7 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
           ))}
         </div>
         <form onSubmit={handleSubmit} className="w-full">
-          <div className="relative flex items-center w-full">
-            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  aria-expanded={isPopoverOpen}
-                  className="absolute left-2 top-1/2 transform -translate-y-1/2 h-8 w-auto px-2 text-xs"
-                >
-                  {selectedCategory || 'All'}
-                  <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <div className="flex flex-col">
-                  {categories.map((category) => (
-                    <Button
-                      key={category.value}
-                      variant="ghost"
-                      onClick={() => {
-                        setSelectedCategory(category.value)
-                        setIsPopoverOpen(false)
-                      }}
-                      className="justify-start"
-                    >
-                      {category.name}
-                    </Button>
-                  ))}
-                </div>
-              </PopoverContent>
-            </Popover>
+          <div className="relative w-full mb-2">
             <Textarea
               ref={inputRef}
               name="input"
@@ -226,19 +186,13 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
               placeholder="Задайте вопрос..."
               spellCheck={false}
               value={input}
-              className="resize-none w-full min-h-12 rounded-full bg-muted border border-input pl-24 pr-10 pt-3 pb-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="resize-none w-full min-h-12 rounded-full bg-muted border border-input pl-4 pr-10 py-3 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               onChange={e => {
                 setInput(e.target.value)
                 setShowEmptyScreen(e.target.value.length === 0)
               }}
               onKeyDown={e => {
-                // Enter should submit the form
-                if (
-                  e.key === 'Enter' &&
-                  !e.shiftKey &&
-                  !e.nativeEvent.isComposing
-                ) {
-                  // Prevent the default action to avoid adding a new line
+                if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
                   if (input.trim().length === 0) {
                     e.preventDefault()
                     return
@@ -249,21 +203,12 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
                 }
               }}
               onHeightChange={height => {
-                // Ensure inputRef.current is defined
                 if (!inputRef.current) return
-
-                // The initial height and left padding is 70px and 2rem
                 const initialHeight = 70
-                // The initial border radius is 32px
                 const initialBorder = 32
-                // The height is incremented by multiples of 20px
                 const multiple = (height - initialHeight) / 20
-
-                // Decrease the border radius by 4px for each 20px height increase
                 const newBorder = initialBorder - 4 * multiple
-                // The lowest border radius will be 8px
-                inputRef.current.style.borderRadius =
-                  Math.max(8, newBorder) + 'px'
+                inputRef.current.style.borderRadius = Math.max(8, newBorder) + 'px'
               }}
               onFocus={() => setShowEmptyScreen(true)}
               onBlur={() => setShowEmptyScreen(false)}
@@ -277,6 +222,38 @@ export function ChatPanel({ messages, query }: ChatPanelProps) {
             >
               <ArrowRight size={20} />
             </Button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={isPopoverOpen}
+                  className="h-8 w-[120px] justify-between text-xs"
+                >
+                  {selectedCategory || 'All'}
+                  <ChevronDown className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <div className="flex flex-col">
+                  {categories.map((category) => (
+                    <Button
+                      key={category.value}
+                      variant="ghost"
+                      onClick={() => {
+                        setSelectedCategory(category.value)
+                        setIsPopoverOpen(false)
+                      }}
+                      className="justify-start text-xs"
+                    >
+                      {category.name}
+                    </Button>
+                  ))}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </form>
       </div>
