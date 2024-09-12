@@ -18,7 +18,11 @@ export const searchSchema = z.object({
     .optional()
     .describe(
       "A list of domains to specifically exclude from the search results. Default is None, which doesn't exclude any domains."
-    )
+    ),
+  category: z
+    .string()
+    .optional()
+    .describe('The category of the search')
 })
 
 export type PartialInquiry = DeepPartial<typeof searchSchema>

@@ -22,7 +22,8 @@ export const searchTool = ({ uiStream, fullResponse }: ToolProps) =>
       max_results,
       search_depth,
       include_domains,
-      exclude_domains
+      exclude_domains,
+      category // Add this parameter
     }) => {
       let hasError = false
       // Append the search section
@@ -49,7 +50,7 @@ export const searchTool = ({ uiStream, fullResponse }: ToolProps) =>
           : search_depth || 'basic'
 
       console.log(
-        `Using search API: ${searchAPI}, Search Depth: ${effectiveSearchDepth}`
+        `Using search API: ${searchAPI}, Search Depth: ${effectiveSearchDepth}, Category: ${category}`
       )
 
       try {
@@ -83,7 +84,8 @@ export const searchTool = ({ uiStream, fullResponse }: ToolProps) =>
             max_results,
             effectiveSearchDepth,
             include_domains,
-            exclude_domains
+            exclude_domains,
+            category // Pass category to the search function
           )
         }
       } catch (error) {
@@ -173,7 +175,8 @@ async function exaSearch(
   maxResults: number = 10,
   _searchDepth: string,
   includeDomains: string[] = [],
-  excludeDomains: string[] = []
+  excludeDomains: string[] = [],
+  category?: string // Add category parameter
 ): Promise<SearchResults> {
   const apiKey = process.env.EXA_API_KEY
   if (!apiKey) {
@@ -182,10 +185,12 @@ async function exaSearch(
 
   const exa = new Exa(apiKey)
   const exaResults = await exa.searchAndContents(query, {
+    type: "keyword",
     highlights: true,
     numResults: maxResults,
     includeDomains,
-    excludeDomains
+    excludeDomains,
+    category // Add category to Exa search options
   })
 
   return {
