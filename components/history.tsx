@@ -16,6 +16,7 @@ import { History as HistoryIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import { HistorySkeleton } from './history-skeleton'
 import { useAppState } from '@/lib/utils/app-state'
+import { useState } from 'react'; // Импортируем useState
 
 type HistoryProps = {
   location: 'sidebar' | 'header'
@@ -26,6 +27,9 @@ export function History({ location, children }: HistoryProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const { isGenerating, setIsGenerating } = useAppState()
+  
+  // Добавляем состояние для управления отображением кнопки
+  const [isButtonVisible, setIsButtonVisible] = useState(false); // Установите true или false в зависимости от вашего условия
 
   const onOpenChange = (open: boolean) => {
     if (open) {
@@ -38,16 +42,17 @@ export function History({ location, children }: HistoryProps) {
   return (
     <Sheet onOpenChange={onOpenChange}>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className={cn({
-            'rounded-full text-foreground/30': location === 'sidebar'
-          })}
-          disabled={isGenerating}
-        >
-          {location === 'header' ? <Menu /> : <ChevronLeft size={16} />}
-        </Button>
+        {isButtonVisible && ( // Условный рендеринг кнопки
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn({
+              'rounded-full text-foreground/30': location === 'sidebar'
+            })}
+          >
+            {location === 'header' ? <Menu /> : <ChevronLeft size={16} />}
+          </Button>
+        )}
       </SheetTrigger>
       <SheetContent className="w-64 rounded-tl-xl rounded-bl-xl">
         <SheetHeader>
